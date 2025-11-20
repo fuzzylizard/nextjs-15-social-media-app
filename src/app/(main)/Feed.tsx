@@ -6,6 +6,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import kyInstance from "@/lib/ky";
 import { Button } from "@/components/ui/button";
+import InfiniteScrollContainer from "@/components/InfiniteScrollContainer";
 
 export default function Feed() {
   const {
@@ -43,11 +44,14 @@ export default function Feed() {
   }
 
   return (
-    <div className="space-y-5">
+    <InfiniteScrollContainer
+      className="space-y-5"
+      onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}
+    >
       {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}
-      <Button onClick={() => fetchNextPage()}>Load more...</Button>
-    </div>
+      {isFetchingNextPage && <Loader2 className="mx-auto my-3 animate-spin" />}
+    </InfiniteScrollContainer>
   );
 }
