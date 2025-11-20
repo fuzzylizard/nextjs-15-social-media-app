@@ -4,18 +4,12 @@ import Post from "@/components/posts/Post";
 import { PostData } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import kyInstance from "@/lib/ky";
 
 export default function Feed() {
   const query = useQuery<PostData[]>({
     queryKey: ["post-feed", "for-you"],
-    queryFn: async () => {
-      const res = await fetch("/api/posts/feed");
-      if (!res.ok) {
-        throw Error(`Request failed with status code ${res.status}`);
-      }
-
-      return res.json();
-    },
+    queryFn: kyInstance.get("/api/posts/feed").json<PostData[]>,
   });
 
   if (query.status === "pending") {
@@ -31,10 +25,10 @@ export default function Feed() {
   }
 
   return (
-    <>
+    <div className="space-y-5">
       {query.data.map((post) => (
         <Post key={post.id} post={post} />
       ))}
-    </>
+    </div>
   );
 }
