@@ -1,22 +1,40 @@
 "use client";
 
 import Post from "@/components/posts/Post";
-import { PostData } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
+import { PostData, PostsPage } from "@/lib/types";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import kyInstance from "@/lib/ky";
+import { Button } from "@/components/ui/button";
 
 export default function Feed() {
-  const query = useQuery<PostData[]>({
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
     queryKey: ["post-feed", "for-you"],
-    queryFn: kyInstance.get("/api/posts/feed").json<PostData[]>,
+    queryFn: ({ pageParam }) =>
+      kyInstance
+        .get(
+          "/api/posts/feed",
+          pageParam ? { searchParams: { cursor: pageParam } } : {},
+        )
+        .json<PostsPage>(),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
-  if (query.status === "pending") {
+  const posts = data?.pages.flatMap((page) => page.posts) || [];
+
+  if (status === "pending") {
     return <Loader2 className="mx-auto animate-spin" />;
   }
 
-  if (query.status === "error") {
+  if (status === "error") {
     return (
       <p className="text-center text-destructive">
         An error occurred loading posts.
@@ -26,9 +44,10 @@ export default function Feed() {
 
   return (
     <div className="space-y-5">
-      {query.data.map((post) => (
+      {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}
+      <Button onClick={() => fetchNextPage()}>Load more...</Button>
     </div>
   );
 }
