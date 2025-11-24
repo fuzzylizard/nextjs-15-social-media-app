@@ -8,6 +8,7 @@ import kyInstance from "@/lib/ky";
 import { Button } from "@/components/ui/button";
 import InfiniteScrollContainer from "@/components/InfiniteScrollContainer";
 import PostsLoadingSkeleton from "@/components/posts/PostsLoadingSkeleton";
+import DeletePostDialogue from "@/components/posts/DeletePostDialogue";
 
 export default function Feed() {
   const {
