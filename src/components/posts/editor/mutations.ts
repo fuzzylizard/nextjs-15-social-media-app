@@ -1,5 +1,10 @@
 import { useToast } from "@/components/ui/use-toast";
-import { InfiniteData, QueryFilters, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  QueryFilters,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { submitPost } from "./actions";
 import { PostsPage } from "@/lib/types";
 import { useSession } from "@/app/(main)/SessionProvider";
